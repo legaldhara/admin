@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .custom-scrollbar {
+    @apply overflow-y-auto;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent;
+  }
+}
+
+
+/* Selection styling */
+::selection {
+  @apply bg-blue-950 text-white;
+}
+::-moz-selection {
+  @apply bg-blue-950 text-white;
+}
+
+/* Font & Theme variables */
+:root {
+  --font-urbanist: 'Urbanist', sans-serif;
+
+  --color-background: #ffffff;
+  --color-foreground: #172554;
+  --color-primary: #3c84d2;
+  --color-warn: #ca0000;
+  --color-warn: #f83939;
+  --color-primary-foreground: #fff4f0;
+  --color-accent: #eab308;
+  --color-accent-foreground: #071b34;
+  --color-muted: #f2c79a;
+  --color-muted-foreground: #7f8084;
+  --color-card: var(--color-background);
+  --color-border: #cecfd3;
+  --color-ring: var(--color-foreground);
+  --radius: 0.75rem;
+}
+
+/* Dark mode overrides */
+.dark {
+  --color-background: #071b34;
+  --color-foreground: #ffffff;
+  --color-primary: #3c84d2;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #eab308;
+  --color-accent-foreground: #071b34;
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+  --color-card: #0f172a;
+  --color-border: #2d3542;
+  --color-ring: #3c84d2;
+}
+
+/* Base styling */
+body {
+  font-family: var(--font-urbanist);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Utilities for background & text */
+.bg-primary { background-color: var(--color-primary); }
+.text-on-primary { color: var(--color-primary-foreground); }
+.bg-accent { background-color: var(--color-accent); }
+.text-on-accent { color: var(--color-accent-foreground); }
+.bg-muted { background-color: var(--color-muted); }
+.text-muted-foreground { color: var(--color-muted-foreground); }
+.bg-card { background-color: var(--color-card); }
+.border-border { border-color: var(--color-border); }
