@@ -20,6 +20,11 @@ const routeHeaders = [
     icon: <Users className="h-4 w-4 sm:h-6 sm:w-6  text-primary" />,
   },
   {
+    pathname: "/co-admins",
+    title: "Co-admin Management",
+    description: "Invite and control administrative access",
+    icon: <Users className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />,
+  },  {
     pathname: "/services",
     title: "Service Management",
     description: "Manage and monitor services across your platform",

@@ -1,0 +1,37 @@
+name: Admin CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint:ci
+      - run: npx tsc -b
+      - run: npm run build
+        env:
+          VITE_BACKEND_API_URL: https://api.example.invalid
+          VITE_FIREBASE_API_KEY: ci-placeholder
+          VITE_FIREBASE_AUTHDOMAIN: ci.invalid
+          VITE_FIREBASE_PROJECT_ID: ci-project
+          VITE_FIREBASE_STORAGE_BUCKET: ci.invalid
+          VITE_FIREBASE_MESSAGEING_SENDER_ID: "123456789"
+          VITE_FIREBASE_APP_ID: 1:123456789:web:ci
+          VITE_FIREBASE_MEASUREMENT_ID: G-CI

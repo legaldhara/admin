@@ -2,9 +2,9 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, LogOut, X } from "lucide-react";
-import { SIDEBAR_DATA } from "../lib/static";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../Store/Store";
+import { getSidebarData } from "../lib/static";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../Store/Store";
 import { logout } from "../Store/authSlice";
 
 interface SidebarItemProps {
@@ -77,6 +77,7 @@ export default function Aside() {
   const [open, setOpen] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
+  const role = useSelector((state: RootState) => state.auth.role);
 
   const handleLogout = () => {  
     dispatch(logout());
@@ -150,7 +151,7 @@ export default function Aside() {
 
       {/* Menu */}
       <nav className="flex-1 flex flex-col gap-1 overflow-y-auto">
-        {SIDEBAR_DATA.map((item) => (
+        {getSidebarData(role).map((item) => (
           <SidebarItem key={item.label} {...item} />
         ))}
       </nav>

@@ -59,6 +59,7 @@ interface CertificateData {
 }
 
 interface UploadedFile {
+  assetId: string;
   url: string;
   publicId: string;
   mimeType?: string;
@@ -136,33 +137,11 @@ export default function AdminCertificateModal({
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    // Handle the response - check if data is array or nested
-    const uploadedData = res.data?.data || res.data?.urls || [];
-
-    // If the API returns URLs as strings, convert to UploadedFile format
-    if (Array.isArray(uploadedData) && uploadedData.length > 0) {
-      if (typeof uploadedData[0] === 'string') {
-        // API returned array of URL strings
-        return uploadedData.map((url: string) => {
-          // Extract publicId from Cloudinary URL
-          const urlParts = url.split('/upload/');
-          let publicId = '';
-          if (urlParts.length > 1) {
-            const pathParts = urlParts[1].split('/');
-            publicId = pathParts.slice(1).join('/').split('.')[0];
-          }
-          return { url, publicId };
-        });
-      }
-      // API already returned correct format
-      return uploadedData;
-    }
-
-    return [];
+    return res.data?.assets || [];
   };
 
-  const deleteFileFromServer = async (publicId: string) => {
-    await secureApi.delete(`/api/v1/media/delete/${encodeURIComponent(publicId)}`);
+  const deleteFileFromServer = async (assetId: string) => {
+    await secureApi.delete(`/api/v1/media/${encodeURIComponent(assetId)}`);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,10 +165,10 @@ export default function AdminCertificateModal({
     }
   };
 
-  const handleDeleteFile = async (publicId: string) => {
+  const handleDeleteFile = async (assetId: string) => {
     try {
-      await deleteFileFromServer(publicId);
-      setUploadedFiles(uploadedFiles.filter(f => f.publicId !== publicId));
+      await deleteFileFromServer(assetId);
+      setUploadedFiles(uploadedFiles.filter(f => f.assetId !== assetId));
     } catch (err: any) {
       console.error('Delete error:', err);
       alert(err.response?.data?.message || 'Failed to delete file');
@@ -216,8 +195,7 @@ export default function AdminCertificateModal({
 
       // Add first uploaded file as attachment
       if (uploadedFiles.length > 0) {
-        requestBody.attachmentUrl = uploadedFiles[0].url;
-        requestBody.attachmentPublicId = uploadedFiles[0].publicId;
+        requestBody.attachmentAssetId = uploadedFiles[0].assetId;
       }
 
       const response = await secureApi.put(
@@ -591,12 +569,12 @@ export default function AdminCertificateModal({
 
                                   return (
                                     <div
-                                      key={file.publicId}
+                                      key={file.assetId}
                                       className="flex items-center gap-3 bg-white border-2 border-green-300 rounded-lg p-3 group hover:border-green-400 transition-all relative"
                                     >
                                       {/* Close/Delete button */}
                                       <button
-                                        onClick={() => handleDeleteFile(file.publicId)}
+                                        onClick={() => handleDeleteFile(file.assetId)}
                                         className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all shadow-lg z-10"
                                         title="Remove file"
                                       >

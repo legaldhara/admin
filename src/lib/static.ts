@@ -7,6 +7,7 @@ import {
     MessageSquareTextIcon,
     //   AlertCircle, Shield,
     Settings,
+    UserCog,
     FileTypeIcon,
     FileAxis3D,
     IndianRupee,
@@ -19,6 +20,12 @@ export const SIDEBAR_DATA = [
         icon: Users,
         label: "Users",
         href: "/users",
+    },
+    {
+        icon: UserCog,
+        label: "Co-admins",
+        href: "/co-admins",
+        roles: ["ADMIN"],
     },
     {
         icon: MessageSquareTextIcon,
@@ -72,6 +79,10 @@ export const SIDEBAR_DATA = [
     // },
 
 ];
+
+export function getSidebarData(role: string | null) {
+    return SIDEBAR_DATA.filter((item) => !("roles" in item) || item.roles?.includes(role || ""));
+}
 
 export function formatCurrency(amount: number): string {
     return new Intl.NumberFormat("en-US", {

@@ -13,7 +13,7 @@ interface ApplicationDetailsPanelProps {
   onSubmitUpdate: (e: React.FormEvent<HTMLFormElement>) => Promise<void>
   uploadedFiles: any[]
   onFilesSelected: (files: FileList | null) => void
-  onDeleteFile: (publicId: string) => void
+  onDeleteFile: (assetId: string) => void
   uploading: boolean
   errorMsg: string | null
   successMsg: string | null
@@ -507,7 +507,7 @@ export default function ApplicationDetailsPanel({
                               <div className="grid grid-cols-3 gap-2 mt-3">
                                 {uploadedFiles.map((file) => (
                                   <motion.div
-                                    key={file.publicId}
+                                    key={file.assetId}
                                     whileHover={{ scale: 1.05 }}
                                     className="relative group"
                                   >
@@ -534,7 +534,7 @@ export default function ApplicationDetailsPanel({
                                       whileHover={{ scale: 1.1 }}
                                       whileTap={{ scale: 0.9 }}
                                       type="button"
-                                      onClick={() => onDeleteFile(file.publicId)}
+                                      onClick={() => onDeleteFile(file.assetId)}
                                       className="absolute -top-2 -right-2 bg-[#f83939] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity border-2 border-white shadow-lg"
                                     >
                                       ✕

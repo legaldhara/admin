@@ -12,5 +12,5 @@ export default defineConfig({
       usePolling: process.env.DOCKER === 'true',  // hot reload inside Docker
     },
   },
-  base: '/admin/',
+  base: '/',
 })

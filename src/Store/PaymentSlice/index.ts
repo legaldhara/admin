@@ -1,6 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../Store";
 import { secureApi } from "../../config/apiClient";
+import axios from "axios";
+
+interface PaymentErrorPayload { message?: string }
+
+const rejectedPaymentRequest = (error: unknown): PaymentErrorPayload => {
+  if (axios.isAxiosError(error)) return error.response?.data ?? { message: error.message };
+  return { message: error instanceof Error ? error.message : "Payment request failed" };
+};
 
 // Fetch paginated payments
 export const fetchAllPayments = createAsyncThunk(
@@ -27,15 +35,11 @@ export const fetchAllPayments = createAsyncThunk(
         ...(status ? { status } : {}), // optional filter
       });
 
-      const res = await secureApi.get(
-        `/api/v1/payment/user/all?${query.toString()}`
-      );
+      const res = await secureApi.get(`/api/v1/payments/admin?${query.toString()}`);
 
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data || { message: err.message }
-      );
+    } catch (error: unknown) {
+      return rejectWithValue(rejectedPaymentRequest(error));
     }
   }
 );
@@ -45,10 +49,10 @@ export const fetchPaymentById = createAsyncThunk(
   "payments/fetchById",
   async (id: string, { rejectWithValue }) => {
     try {
-      const res = await secureApi.get(`/api/v1/payment/${id}`);
+      const res = await secureApi.get(`/api/v1/payments/admin/${id}`);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data || { message: err.message });
+    } catch (error: unknown) {
+      return rejectWithValue(rejectedPaymentRequest(error));
     }
   }
 );
@@ -66,8 +70,8 @@ interface Pagination {
 }
 
 interface PaymentState {
-  payments: any[];
-  paymentDetails: any | null;
+  payments: unknown[];
+  paymentDetails: unknown;
   success: boolean;
   pagination: Pagination
   loading: boolean;
@@ -105,12 +109,12 @@ const paymentSlice = createSlice({
       })
       .addCase(fetchAllPayments.fulfilled, (state, action) => {
         state.loading = false;
-        state.payments = action.payload.payments || [];
-        state.pagination = action.payload.pagination || initialState.pagination;
+        state.payments = action.payload.data || [];
+        state.pagination = { ...initialState.pagination, totalRecords: state.payments.length, totalPages: 1 };
       })
       .addCase(fetchAllPayments.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as any)?.message || "Failed to fetch payments";
+        state.error = (action.payload as PaymentErrorPayload | undefined)?.message || "Failed to fetch payments";
       })
 
       // 🔹 Fetch Payment By ID
@@ -120,11 +124,11 @@ const paymentSlice = createSlice({
       })
       .addCase(fetchPaymentById.fulfilled, (state, action) => {
         state.loading = false;
-        state.paymentDetails = action.payload.payment;
+        state.paymentDetails = action.payload.data;
       })
       .addCase(fetchPaymentById.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as any)?.message || "Failed to fetch payment details";
+        state.error = (action.payload as PaymentErrorPayload | undefined)?.message || "Failed to fetch payment details";
       });
   },
 });

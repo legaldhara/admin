@@ -24,6 +24,7 @@ import { secureApi } from "../config/apiClient";
 import ApplicationDetailsPanel from "../components/ApplicationDetailsSidebar";
 
 interface UploadedFile {
+  assetId: string;
   url: string;
   publicId: string;
   mimeType?: string;
@@ -37,17 +38,13 @@ const uploadFilesToServer = async (files: File[]): Promise<UploadedFile[]> => {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  const { urls = [], publicIds = [] } = res.data || {};
-  return urls.map((url: string, i: number) => ({
-    url,
-    publicId: publicIds[i] || "",
-  }));
+  return res.data?.assets || [];
 };
 
 
 /* ---------- Delete file ---------- */
-const deleteFileFromServer = async (publicId: string) => {
-  await secureApi.delete(`/api/v1/media/delete/${publicId}`);
+const deleteFileFromServer = async (assetId: string) => {
+  await secureApi.delete(`/api/v1/media/${encodeURIComponent(assetId)}`);
 };
 
 export default function Applications() {
@@ -101,8 +98,8 @@ export default function Applications() {
   const handleFilesSelected = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const arr = Array.from(files);
-    if (arr.length + uploadedFiles.length > 5) {
-      setErrorMsg("You can upload up to 5 files only.");
+    if (arr.length + uploadedFiles.length > 4) {
+      setErrorMsg("You can upload up to 4 files only.");
       return;
     }
 
@@ -120,11 +117,11 @@ export default function Applications() {
     }
   };
 
-  const handleDeleteUploaded = async (publicId: string) => {
+  const handleDeleteUploaded = async (assetId: string) => {
     const prev = [...uploadedFiles];
-    setUploadedFiles((p) => p.filter((f) => f.publicId !== publicId));
+    setUploadedFiles((p) => p.filter((f) => f.assetId !== assetId));
     try {
-      await deleteFileFromServer(publicId);
+      await deleteFileFromServer(assetId);
       setSuccessMsg("File deleted successfully");
     } catch (err) {
       console.error("Delete error", err);
@@ -154,10 +151,7 @@ export default function Applications() {
       const meta =
         uploadedFiles.length > 0
           ? {
-            documents: uploadedFiles.map((f) => ({
-              url: f.url,
-              publicId: f.publicId,
-            })),
+            documents: uploadedFiles.map((file) => ({ assetId: file.assetId })),
           }
           : {};
 

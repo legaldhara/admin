@@ -140,11 +140,11 @@ export const fetchAllCertificateRequests = createAsyncThunk<
 
 export const updateCertificateStatus = createAsyncThunk<
   CertificateRequest,
-  { requestNo: string; attachmentUrl?: string | null; attachmentPublicId?: string | null; message?: string; status: CertificateRequest["status"] },
+  { requestNo: string; attachmentAssetId?: string | null; message?: string; status: CertificateRequest["status"] },
   { rejectValue: { message: string } }
->("certificateAdmin/updateStatus", async ({ requestNo, attachmentUrl, attachmentPublicId, message, status }, { rejectWithValue }) => {
+>("certificateAdmin/updateStatus", async ({ requestNo, attachmentAssetId, message, status }, { rejectWithValue }) => {
   try {
-    const res = await secureApi.put(`/api/v1/certificate/${requestNo}/update`, { status, message, attachmentPublicId, attachmentUrl });
+    const res = await secureApi.put(`/api/v1/certificate/${requestNo}/update`, { status, message, attachmentAssetId });
     return res.data.data;
   } catch (err: any) {
     return rejectWithValue(err.response?.data || { message: "Failed to update status" });

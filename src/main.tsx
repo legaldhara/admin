@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 // import { AuthProvider } from './hooks/AuthProvider.tsx'
-import { RecaptchaVerifier } from "firebase/auth";
 // import { Toaster } from 'react-hot-toast'
 // import { LoaderProvider } from './hooks/LoaderProvider.tsx'
 import Message from "./components/Message.tsx";
@@ -13,12 +12,6 @@ import { store } from "./Store/Store.ts";
 
 // import { clearAuth, setAccessToken } from './Store/authSlice/index.ts'
 // import { auth } from './config/FirebaseConfiguration.ts'
-
-declare global {
-  interface Window {
-    recaptchaVerifier: RecaptchaVerifier;
-  }
-}
 
 // onAuthStateChanged(auth, async (user) => {
 //   if (user) {
@@ -33,7 +26,7 @@ declare global {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter basename='/admin'>
+    <BrowserRouter>
       <Provider store={store}>
         <App />
         <Message />

@@ -8,9 +8,12 @@ interface User {
   phoneNumber: string;
   name: string;
   email: string;
+  phone?: string | null;
+  role: "ADMIN" | "COADMIN" | "USER";
 }
 interface SessionResponse {
   user?: User;
+  mfaVerified?: boolean;
 }
 
 export const useAuthListener = () => {
@@ -29,12 +32,13 @@ export const useAuthListener = () => {
         });
 
         // If user data is available, set it in the Redux store
-        if (res?.user) {
+        if (res?.user && res.mfaVerified) {
           dispatch(setUser({
             userId: res.user.id,
-            phoneNumber: res.user.phoneNumber,
+            phoneNumber: res.user.phone || null,
             email: res.user.email,
             name: res.user.name,
+            role: res.user.role,
           }));
         } else {
           dispatch(clearUser());

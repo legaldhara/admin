@@ -5,11 +5,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "./Store/Store";
 import { useAuthListener } from "./hooks/useAuthListener";
 // import PageNotFound from "./components/PageNotFound";
-import { useEffect } from "react";
-import {
-  // listenForForegroundNotifications, requestAndSaveToken,
-  registerFirebaseSW, requestUserNotificationPermission
-} from "./utils/firebaseNotification";
 // import { 
 //   // secureApi,
 //    useSecureApi } from "./config/apiClient";
@@ -29,6 +24,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import CircularText from "./components/UI/CircularText/CircularText";
 import Certificates from "./pages/Certificates";
 import Documents from "./pages/Documents";
+import CoAdminPage from "./features/coadmins/CoAdminPage";
 const App = () => {
 
   // const { secureRequest } = useSecureApi();
@@ -55,20 +51,6 @@ const App = () => {
   // }, [])
 
   // callApi();
-
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        console.log('User decision:', permission);
-      });
-    }
-  }, []);
-
-  // Register Service worker for FCM Token
-  useEffect(() => {
-    requestUserNotificationPermission();
-    registerFirebaseSW();
-  }, []);
 
   // // Request permission & save token whenever auth state settles
   // useEffect(() => {
@@ -113,6 +95,9 @@ const App = () => {
           <Route path="/applications" element={<Applications />} />
           <Route path="/applications/:id" element={<ApplicationDetail />} />
           <Route path="/users" element={<Users />} />
+          <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+            <Route path="/co-admins" element={<CoAdminPage />} />
+          </Route>
           <Route path="/services" element={<Services />} />
           <Route path="/emails" element={<Email />} />
           <Route path="/documents" element={<Documents />} />

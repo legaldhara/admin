@@ -198,7 +198,7 @@ export function Header() {
 
 
   useEffect(() => {
-    socket.emit("join-admins");
+    socket.connect();
   }, []);
 
   useEffect(() => {
