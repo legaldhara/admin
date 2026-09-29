@@ -1,10 +1,10 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("admin deployment configuration", () => {
   it("defines Cloudflare Pages routing and CI checks", () => {
     expect(readFileSync(".env.example", "utf8")).toContain("VITE_BACKEND_API_URL=");
-    expect(readFileSync("public/_redirects", "utf8")).toContain("/* /index.html 200");
+    expect(existsSync("public/_redirects")).toBe(false);
     expect(readFileSync("public/_headers", "utf8")).toContain("X-Content-Type-Options: nosniff");
     const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
     expect(workflow).toContain("node-version: 22");
