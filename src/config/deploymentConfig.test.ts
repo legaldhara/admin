@@ -16,6 +16,9 @@ describe("admin deployment configuration", () => {
   it("builds for the root of the dedicated admin domain", () => {
     expect(readFileSync("vite.config.ts", "utf8")).toContain("base: '/'");
     expect(readFileSync("src/main.tsx", "utf8")).not.toContain("basename='/admin'");
+    const wranglerConfig = readFileSync("wrangler.jsonc", "utf8");
+    expect(wranglerConfig).toContain('"directory": "./dist"');
+    expect(wranglerConfig).toContain('"not_found_handling": "single-page-application"');
   });
 
   it("does not ship stale Firebase credentials or request notifications during login", () => {
