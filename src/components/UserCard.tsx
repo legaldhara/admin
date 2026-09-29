@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Mail, Phone, Calendar, MapPin, CheckCircle2, Clock, UserCheck } from "lucide-react"
 
 interface User {
@@ -19,14 +18,8 @@ interface User {
 }
 
 export default function UserCard({ user }: { user: User }) {
-  const [_, setIsHovered] = useState(false)
-
   return (
-    <div
-      className="group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="group">
       <div
         className={`   transition-all duration-500 border border-border
         }`}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../Store/Store";
 import { fetchAllPayments } from "../Store/PaymentSlice";
@@ -33,17 +33,19 @@ export default function PaymentPage() {
   const [selected, setSelected] = useState<PaymentRow | null>(null);
 
   const refresh = () => {
-    void dispatch(fetchAllPayments({ limit: 100 }));
+    void dispatch(fetchAllPayments({ limit: 100, search: search.trim() }));
   };
 
-  useEffect(refresh, [dispatch]);
+  useEffect(() => {
+    void dispatch(fetchAllPayments({ limit: 100, search: "" }));
+  }, [dispatch]);
 
-  const rows = useMemo(() => (payments as PaymentRow[]).filter((attempt) => {
-    const needle = search.trim().toLowerCase();
-    if (!needle) return true;
-    return [attempt.id, attempt.gatewayOrderId, attempt.gatewayPaymentId, attempt.charge.id, attempt.charge.purpose]
-      .some((value) => value?.toLowerCase().includes(needle));
-  }), [payments, search]);
+  const submitSearch = (event: FormEvent) => {
+    event.preventDefault();
+    refresh();
+  };
+
+  const rows = payments as PaymentRow[];
 
   if (loading) return <div className="p-8">Loading payment records…</div>;
 
@@ -53,13 +55,16 @@ export default function PaymentPage() {
         <h1 className="text-2xl font-semibold">Payment Recovery</h1>
         <p className="text-sm text-muted-foreground">Review Razorpay attempts, reconcile stale records, and request full refunds.</p>
       </header>
-      <input
-        aria-label="Search payments"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search order, payment, charge, or purpose"
-        className="w-full max-w-xl rounded border p-2"
-      />
+      <form className="flex w-full max-w-xl gap-2" onSubmit={submitSearch}>
+        <input
+          aria-label="Search payments"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search customer, ticket, request, plan, order, or payment"
+          className="min-w-0 flex-1 rounded border p-2"
+        />
+        <button type="submit" className="rounded bg-foreground px-4 py-2 text-background">Search</button>
+      </form>
       <div className="overflow-x-auto rounded border">
         <table className="w-full text-sm">
           <thead className="bg-foreground text-background">

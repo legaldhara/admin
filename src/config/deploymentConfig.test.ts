@@ -27,4 +27,12 @@ describe("admin deployment configuration", () => {
     expect(worker).not.toContain("chotu-app-a37c6");
     expect(readFileSync("src/App.tsx", "utf8")).not.toContain("Notification.requestPermission");
   });
+
+  it("code-splits protected pages away from the login bundle", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).toContain('lazy(() => import("./pages/Dashboard"))');
+    expect(app).toContain("<Suspense");
+    expect(app).not.toContain('import Dashboard from "./pages/Dashboard"');
+    expect(app).not.toContain('import CircularText from "./components/UI/CircularText/CircularText"');
+  });
 });

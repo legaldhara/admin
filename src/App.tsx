@@ -1,36 +1,35 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "./Store/Store";
 import { useAuthListener } from "./hooks/useAuthListener";
-// import PageNotFound from "./components/PageNotFound";
-// import { 
-//   // secureApi,
-//    useSecureApi } from "./config/apiClient";
-
-import TermsAndConditions from "./components/Terms&Conditions";
-import PrivacyPolicy from "./components/PrivacyPolicy";
-import Users from "./pages/Users";
-import Payments from "./pages/Payments";
-import Services from "./pages/Services";
-import Queries from "./pages/Queries";
-import Applications from "./pages/Applications";
-import ApplicationDetail from "./pages/ApplicationDetail";
-import Email from "./pages/Email";
-import Profile from "./pages/Profile";
-import PanelLayout from "./components/PanelLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
-import CircularText from "./components/UI/CircularText/CircularText";
-import Certificates from "./pages/Certificates";
-import Documents from "./pages/Documents";
-import CoAdminPage from "./features/coadmins/CoAdminPage";
-const App = () => {
 
-  // const { secureRequest } = useSecureApi();
-  const { authChecking,
-    // isAuthenticated 
-  } = useSelector((state: RootState) => state.auth);
+const TermsAndConditions = lazy(() => import("./components/Terms&Conditions"));
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
+const PanelLayout = lazy(() => import("./components/PanelLayout"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Users = lazy(() => import("./pages/Users"));
+const Payments = lazy(() => import("./pages/Payments"));
+const Services = lazy(() => import("./pages/Services"));
+const Queries = lazy(() => import("./pages/Queries"));
+const Applications = lazy(() => import("./pages/Applications"));
+const ApplicationDetail = lazy(() => import("./pages/ApplicationDetail"));
+const Email = lazy(() => import("./pages/Email"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Certificates = lazy(() => import("./pages/Certificates"));
+const Documents = lazy(() => import("./pages/Documents"));
+const CoAdminPage = lazy(() => import("./features/coadmins/CoAdminPage"));
+
+const loadingFallback = (
+  <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading">
+    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-gray-900" />
+  </div>
+);
+
+const App = () => {
+  const { authChecking } = useSelector((state: RootState) => state.auth);
 
   // Checking Auth Session
   useAuthListener();
@@ -65,22 +64,12 @@ const App = () => {
   // }, []);
 
   if (authChecking) {
-    return (
-      <div className=" min-h-screen w-full flex justify-center items-center relative">
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <CircularText
-            text="LEGALDHARA PVT LTD. *"
-            onHover="speedUp"
-            spinDuration={4}
-            className="custom-class"
-          />
-        </div>
-      </div>
-    );
+    return loadingFallback;
   }
 
   return (
-    <Routes>
+    <Suspense fallback={loadingFallback}>
+      <Routes>
       {/* Guest */}
       <Route path="/auth" element={<Login />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
@@ -111,7 +100,8 @@ const App = () => {
 
       {/* default */}
       <Route path="*" element={<Navigate to="/auth" replace />} />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 };
 

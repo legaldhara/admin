@@ -110,7 +110,11 @@ const paymentSlice = createSlice({
       .addCase(fetchAllPayments.fulfilled, (state, action) => {
         state.loading = false;
         state.payments = action.payload.data || [];
-        state.pagination = { ...initialState.pagination, totalRecords: state.payments.length, totalPages: 1 };
+        state.pagination = action.payload.pagination || {
+          ...initialState.pagination,
+          totalRecords: state.payments.length,
+          totalPages: 1,
+        };
       })
       .addCase(fetchAllPayments.rejected, (state, action) => {
         state.loading = false;
