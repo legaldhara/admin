@@ -290,7 +290,7 @@ Government Services Team`,
 
   const handleArchive = (emailIds: string[]) => {
     // In a real app, you'd have an archive folder
-    console.log(emailIds);
+    void emailIds;
     
     alert("Emails archived successfully!")
     setSelectedEmails([])

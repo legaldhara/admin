@@ -86,7 +86,6 @@ export const fetchDocuments = createAsyncThunk<
       const res = await secureApi.get(`/api/v1/document?${query.toString()}`);
       return res.data;
     } catch (err: any) {
-      console.log("error",err)
       return rejectWithValue(
         err.response?.data || { message: "Failed to fetch documents" }
       );

@@ -24,7 +24,6 @@ import UserSummary from "../components/Dashboard/user-summary"
 export default function Dashboard() {
   const dispatch = useAppDispatch()
   const {
-    userSummary,
     monthlyUsers,
     userActivity,
     appStatus,
@@ -38,13 +37,9 @@ export default function Dashboard() {
     error,
   } = useAppSelector((state) => state.dashboard)
 
-  console.log(userSummary);
-  
-
   useEffect(() => {
     const loadAll = async () => {
-      try {
-        await Promise.all([
+      await Promise.all([
           dispatch(fetchUserSummary()).unwrap(),
           dispatch(fetchMonthlyUsers()).unwrap(),
           dispatch(fetchRecentUserActivity()).unwrap(),
@@ -55,10 +50,7 @@ export default function Dashboard() {
           dispatch(fetchPaymentType()).unwrap(),
           dispatch(fetchCertificateStats()).unwrap(),
           dispatch(fetchQueryStats()).unwrap(),
-        ])
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err)
-      }
+        ]).catch(() => undefined)
     }
 
     loadAll()

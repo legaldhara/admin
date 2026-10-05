@@ -68,8 +68,6 @@ const initialState: ApplicationState = {
 //                 withCredentials: true,
 //             });
 
-//             console.log(res.data);
-
 //             return res.data;
 //         } catch (error: any) {
 //             return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to fetch applications");
@@ -108,7 +106,6 @@ export const getApplicationById = createAsyncThunk(
             const res = await secureApi.get(`/api/v1/application/${ticketNo}`, {
                 withCredentials: true,
             });
-            console.log("Application Details:", res.data);
             return res.data.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to fetch application");
@@ -134,8 +131,6 @@ export const updateApplicationStatus = createAsyncThunk(
             const res = await secureApi.post(`/api/v1/application/update/${ticketNo}`, data, {
                 withCredentials: true,
             });
-            console.log(res.data);
-            
             return res.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to update application");

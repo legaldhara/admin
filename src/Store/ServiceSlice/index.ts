@@ -56,7 +56,6 @@ export const fetchServices = createAsyncThunk(
       return res.data;
 
     } catch (err) {
-      console.log(err);
       return rejectWithValue(getErrorMessage(err));
     }
   }

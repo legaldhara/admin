@@ -109,8 +109,7 @@ export default function Applications() {
       const uploaded = await uploadFilesToServer(arr);
       setUploadedFiles((prev) => [...prev, ...uploaded]);
       setSuccessMsg("Upload successful");
-    } catch (err) {
-      console.error("Upload error", err);
+    } catch {
       setErrorMsg("Upload failed. Try again.");
     } finally {
       setUploading(false);
@@ -123,8 +122,7 @@ export default function Applications() {
     try {
       await deleteFileFromServer(assetId);
       setSuccessMsg("File deleted successfully");
-    } catch (err) {
-      console.error("Delete error", err);
+    } catch {
       setUploadedFiles(prev);
       setErrorMsg("Failed to delete file");
     }
@@ -174,7 +172,6 @@ export default function Applications() {
       e.currentTarget.reset();
       setSuccessMsg("Application updated successfully!");
     } catch (err: any) {
-      console.error(err);
       setErrorMsg(err.response?.data?.message || "Something went wrong");
     }
   };
@@ -220,8 +217,8 @@ export default function Applications() {
       if (res) {
         setIsDetailsOpen(true);
       }
-    } catch (error) {
-      console.error("Failed to load details:", error);
+    } catch {
+      setErrorMsg("Failed to load application details");
     }
   };
 

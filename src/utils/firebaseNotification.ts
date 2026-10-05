@@ -8,8 +8,7 @@ export const requestUserNotificationPermission = async (): Promise<NotificationP
         try {
             const permission = await Notification.requestPermission();
             return permission;
-        } catch (err) {
-            console.error('Error requesting notification permission:', err);
+        } catch {
             return 'default';
         }
     } else {
@@ -19,11 +18,7 @@ export const requestUserNotificationPermission = async (): Promise<NotificationP
 
 export async function registerFirebaseSW() {
     if ('serviceWorker' in navigator) {
-        try {
-            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        } catch (err) {
-            console.error('Service Worker registration failed:', err);
-        }
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => undefined);
     }
 }
 
@@ -32,7 +27,6 @@ export async function requestAndSaveToken(isAuthenticated: boolean, secureReques
 
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
-        console.warn('Notifications permission not granted:', permission);
         return;
     }
 
@@ -49,8 +43,8 @@ export async function requestAndSaveToken(isAuthenticated: boolean, secureReques
                 },
             });
         }
-    } catch (err) {
-        console.error('Error fetching FCM token:', err);
+    } catch {
+        return;
     }
 }
 
@@ -59,7 +53,6 @@ export async function requestAndSaveToken(isAuthenticated: boolean, secureReques
  */
 export function listenForForegroundNotifications() {
     onMessage(messaging, async (payload) => {
-        console.log('📩 Foreground payload:', payload);
         if (Notification.permission === 'granted' && payload.notification) {
             const reg = await navigator.serviceWorker.ready;
             reg.showNotification(payload.notification.title || 'Notification', {

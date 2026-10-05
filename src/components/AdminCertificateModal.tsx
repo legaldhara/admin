@@ -151,13 +151,11 @@ export default function AdminCertificateModal({
 
       try {
         const uploaded = await uploadFilesToServer(files);
-        console.log('Uploaded files:', uploaded); // Debug log
         setUploadedFiles([...uploadedFiles, ...uploaded]);
 
         // Clear the input so same file can be uploaded again
         e.target.value = '';
       } catch (err: any) {
-        console.error('Upload error:', err);
         alert(err.response?.data?.message || 'Failed to upload files');
       } finally {
         setIsUploading(false);
@@ -170,7 +168,6 @@ export default function AdminCertificateModal({
       await deleteFileFromServer(assetId);
       setUploadedFiles(uploadedFiles.filter(f => f.assetId !== assetId));
     } catch (err: any) {
-      console.error('Delete error:', err);
       alert(err.response?.data?.message || 'Failed to delete file');
     }
   };

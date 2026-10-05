@@ -84,7 +84,6 @@ export const fetchQueries = createAsyncThunk(
       });
 
       const finalURL = `/api/v1/query/allqueries?${query.toString()}`;
-      console.log("FETCH QUERIES URL:", finalURL);
 
       const res = await secureApi.get(finalURL);
 

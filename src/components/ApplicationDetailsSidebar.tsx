@@ -72,8 +72,6 @@ export default function ApplicationDetailsPanel({
     }
   }
 
-  console.log("selecteedn application :: ", selectedApplication)
-
   const currentStatus = getStatusColor(selectedApplication.applicationStatus)
 
   return (

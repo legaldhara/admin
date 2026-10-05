@@ -42,7 +42,6 @@ export const fetchUsers = createAsyncThunk(
 export const fetchUserById = createAsyncThunk("users/fetchUserById", async (id: string, { rejectWithValue }) => {
   try {
     const { data } = await secureApi.get(`/api/v1/user/detail/${id}`)
-    console.log("user details :",data); 
     // server returns { success: true, user } in our controller
     return data.user ?? null
   } catch (err: any) {
@@ -57,7 +56,7 @@ export const deleteUser = createAsyncThunk("users/deleteUser", async (id: string
   try {
     // await secureApi.delete(`${API_URL}/${id}`)
     // return id
-    console.log(id);
+    void id;
     
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to delete user")

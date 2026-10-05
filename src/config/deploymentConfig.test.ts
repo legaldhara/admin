@@ -1,5 +1,15 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+
+const findSourceFiles = (directory: string): string[] =>
+  readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return findSourceFiles(path);
+    return entry.isFile() && /\.(ts|tsx)$/.test(entry.name) && !entry.name.includes(".test.")
+      ? [path]
+      : [];
+  });
 
 describe("admin deployment configuration", () => {
   it("defines Cloudflare Pages routing and CI checks", () => {
@@ -34,5 +44,13 @@ describe("admin deployment configuration", () => {
     expect(app).toContain("<Suspense");
     expect(app).not.toContain('import Dashboard from "./pages/Dashboard"');
     expect(app).not.toContain('import CircularText from "./components/UI/CircularText/CircularText"');
+  });
+
+  it("does not ship production console logging", () => {
+    const consoleCalls = findSourceFiles("src").filter((path) =>
+      /console\.\w+\s*\(/.test(readFileSync(path, "utf8")),
+    );
+
+    expect(consoleCalls).toEqual([]);
   });
 });

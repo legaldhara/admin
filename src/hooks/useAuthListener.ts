@@ -43,8 +43,7 @@ export const useAuthListener = () => {
         } else {
           dispatch(clearUser());
         }
-      } catch (error) {
-        console.error('Error fetching session:', error);
+      } catch {
         dispatch(clearUser());
       } finally {
         dispatch(setAuthChecking(false));

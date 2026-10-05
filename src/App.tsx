@@ -37,16 +37,12 @@ const App = () => {
   // async function callApi() {
   //   try {
   //     const response = await secureApi.get('/admin/analytics/payments/summary');
-  //     console.log(response.data);
   //     return response.data;
 
   //   } catch (error) {
-  //     console.log(error);
-
   //   }
   // }
   // useEffect(() => {
-  //   // console.log(callApi());
   // }, [])
 
   // callApi();

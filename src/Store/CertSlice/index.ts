@@ -95,10 +95,8 @@ export interface CertificateAdminState {
 //   async (requestNo, { rejectWithValue }) => {
 //     try {
 //       const res = await secureApi.get(`/api/v1/certificate/${requestNo}`);
-//       console.log("Fetched Certificate Details:", res.data);
 //       return res.data;
 //     } catch (err: any) {
-//       console.error("Error fetching certificate details:", err);
 //       return rejectWithValue(
 //         err.response?.data || { message: "Failed to fetch certificate details" }
 //       );
@@ -129,7 +127,6 @@ export const fetchAllCertificateRequests = createAsyncThunk<
 
       return res.data;
     } catch (err: any) {
-      console.log(err)
       return rejectWithValue(
         err.response?.data || { message: "Failed to fetch requests" }
       );

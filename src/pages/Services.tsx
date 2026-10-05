@@ -113,7 +113,7 @@ export default function ServicesPage() {
 
 
   // const handleDeleteService = (id: string) => {
-  //   dispatch(deleteService(id)).unwrap().catch(console.error)
+  //   dispatch(deleteService(id)).unwrap()
   // }
 
   const handleEditClick = (service: Service) => {

@@ -45,7 +45,6 @@ export async function uploadImages(
 
     throw new Error(data?.message || "Invalid upload response");
   } catch (error: any) {
-    console.error("Upload failed:", error.response || error.message);
     throw new Error(error.response?.data?.message || error.message || "Image upload failed");
   }
 }

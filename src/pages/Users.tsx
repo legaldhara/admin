@@ -18,8 +18,7 @@ import CircularText from "../components/UI/CircularText/CircularText";
 
 export default function UsersPage() {
   const dispatch = useAppDispatch();
-  const { users, loading, selectedUser: userDetails, pagination } = useSelector((state: RootState) => state.user as any);
-  console.log(userDetails);
+  const { users, loading, pagination } = useSelector((state: RootState) => state.user as any);
 
   const [isActiveFilter, setIsActiveFilter] = useState("ALL");
   const [startDate, setStartDate] = useState("");
