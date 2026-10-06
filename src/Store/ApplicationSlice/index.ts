@@ -113,31 +113,6 @@ export const getApplicationById = createAsyncThunk(
     }
 );
 
-export const updateApplicationStatus = createAsyncThunk(
-    "application/updateApplication",
-    async ({ ticketNo, data }: {
-        ticketNo: string; data: {
-            message?: string,
-            statusAction?: string,
-            paymentRequired?: true,
-            updateCharges?: number,
-            meta?: any,
-            docRequired?: true,
-            updateType?: string
-        }
-    }, thunkAPI) => {
-
-        try {
-            const res = await secureApi.post(`/api/v1/application/update/${ticketNo}`, data, {
-                withCredentials: true,
-            });
-            return res.data;
-        } catch (error: any) {
-            return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to update application");
-        }
-    }
-);
-
 export const deleteApplication = createAsyncThunk(
     "application/deleteApplication",
     async (id: string, thunkAPI) => {
@@ -197,21 +172,6 @@ const applicationSlice = createSlice({
                 state.application = action.payload;
             })
             .addCase(getApplicationById.rejected, (state, action: PayloadAction<any>) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-
-            // Update
-            .addCase(updateApplicationStatus.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(updateApplicationStatus.fulfilled, (state, action) => {
-                state.loading = false;
-                state.success = true;
-                state.message = action.payload.message;
-            })
-            .addCase(updateApplicationStatus.rejected, (state, action: PayloadAction<any>) => {
                 state.loading = false;
                 state.error = action.payload;
             })

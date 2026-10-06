@@ -135,31 +135,6 @@ export const fetchAllCertificateRequests = createAsyncThunk<
 );
 
 
-export const updateCertificateStatus = createAsyncThunk<
-  CertificateRequest,
-  { requestNo: string; attachmentAssetId?: string | null; message?: string; status: CertificateRequest["status"] },
-  { rejectValue: { message: string } }
->("certificateAdmin/updateStatus", async ({ requestNo, attachmentAssetId, message, status }, { rejectWithValue }) => {
-  try {
-    const res = await secureApi.put(`/api/v1/certificate/${requestNo}/update`, { status, message, attachmentAssetId });
-    return res.data.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data || { message: "Failed to update status" });
-  }
-});
-
-export const addCertificateUpdate = createAsyncThunk<
-  any, // you can replace with proper response type if known
-  { rejectValue: { message: string } }
->("certificateAdmin/addUpdate", async (data, { rejectWithValue }) => {
-  try {
-    const res = await secureApi.post("/api/certificates/admin/update", data);
-    return res.data.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data || { message: "Failed to add update" });
-  }
-});
-
 // ✅ Slice
 const initialState: CertificateAdminState = {
   requests: [],
@@ -198,25 +173,6 @@ const certificateAdminSlice = createSlice({
       })
       .addCase(fetchAllCertificateRequests.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-      })
-
-      
-      // 🔹 Update status
-      .addCase(updateCertificateStatus.fulfilled, (state, action: PayloadAction<CertificateRequest>) => {
-        const index = state.requests.findIndex((r) => r.id === action.payload.id);
-        if (index !== -1) state.requests[index] = action.payload;
-        state.success = true;
-      })
-      .addCase(updateCertificateStatus.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
-      // 🔹 Add update
-      .addCase(addCertificateUpdate.fulfilled, (state) => {
-        state.success = true;
-      })
-      .addCase(addCertificateUpdate.rejected, (state, action) => {
         state.error = action.payload;
       });
   },

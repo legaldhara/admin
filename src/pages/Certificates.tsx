@@ -124,7 +124,7 @@ const CertificatesManagement: React.FC = () => {
   const closeModal = () => {
     setShowModal(false);
     setSelectedRequestNo(null);
-
+    void dispatch(fetchAllCertificateRequests({ page, limit, search: debouncedSearch }));
   };
 
 

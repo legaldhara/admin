@@ -11,7 +11,7 @@ import { RootState } from "../Store/Store";
 import { useAppDispatch } from "../hooks/hookType";
 import {
   fetchApplications,
-  getApplicationById, updateApplicationStatus
+  getApplicationById
 } from "../Store/ApplicationSlice";
 import ActionButton from "../components/UI/Button";
 import { AnimatedCard } from "../components/AnimatedCard";
@@ -20,32 +20,7 @@ import { formatDate, splitter } from "../lib/static";
 import { Application } from "../utils/types";
 import { getStatusBadge } from "../components/Bagdes";
 import CircularText from "../components/UI/CircularText/CircularText";
-import { secureApi } from "../config/apiClient";
 import ApplicationDetailsPanel from "../components/ApplicationDetailsSidebar";
-
-interface UploadedFile {
-  assetId: string;
-  url: string;
-  publicId: string;
-  mimeType?: string;
-}
-
-/* ---------- Upload files ---------- */
-const uploadFilesToServer = async (files: File[]): Promise<UploadedFile[]> => {
-  const form = new FormData();
-  files.forEach((f) => form.append("files", f));
-  const res = await secureApi.post("/api/v1/media/upload", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
-  return res.data?.assets || [];
-};
-
-
-/* ---------- Delete file ---------- */
-const deleteFileFromServer = async (assetId: string) => {
-  await secureApi.delete(`/api/v1/media/${encodeURIComponent(assetId)}`);
-};
 
 export default function Applications() {
   
@@ -61,12 +36,8 @@ export default function Applications() {
   const [page, setPage] = useState(1);
   const limit = 10;
   
-  // Details panel + upload
+  // Details panel
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -93,88 +64,6 @@ export default function Applications() {
       })
     );
   }, [dispatch, page, debouncedSearch, statusFilter, startDate, endDate]);
-
-  /* ---------- File handlers ---------- */
-  const handleFilesSelected = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    const arr = Array.from(files);
-    if (arr.length + uploadedFiles.length > 4) {
-      setErrorMsg("You can upload up to 4 files only.");
-      return;
-    }
-
-    setErrorMsg(null);
-    setUploading(true);
-    try {
-      const uploaded = await uploadFilesToServer(arr);
-      setUploadedFiles((prev) => [...prev, ...uploaded]);
-      setSuccessMsg("Upload successful");
-    } catch {
-      setErrorMsg("Upload failed. Try again.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDeleteUploaded = async (assetId: string) => {
-    const prev = [...uploadedFiles];
-    setUploadedFiles((p) => p.filter((f) => f.assetId !== assetId));
-    try {
-      await deleteFileFromServer(assetId);
-      setSuccessMsg("File deleted successfully");
-    } catch {
-      setUploadedFiles(prev);
-      setErrorMsg("Failed to delete file");
-    }
-  };
-
-  /* ---------- Submit Update ---------- */
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setSuccessMsg(null);
-
-    const form = new FormData(e.currentTarget);
-    const message = (form.get("message") as string) || "";
-    const statusAction = (form.get("statusAction") as string) || undefined;
-    const paymentRequired =
-      form.get("paymentRequired") === "true" ? true : undefined;
-    const updateCharges = form.get("updateCharges")
-      ? Number(form.get("updateCharges"))
-      : undefined;
-    const docRequired =
-      form.get("docRequired") === "true" ? true : undefined;
-
-    try {
-      const meta =
-        uploadedFiles.length > 0
-          ? {
-            documents: uploadedFiles.map((file) => ({ assetId: file.assetId })),
-          }
-          : {};
-
-      dispatch(
-        updateApplicationStatus({
-          ticketNo: selectedApplication!.ticketNo,
-          data: {
-            message,
-            statusAction,
-            paymentRequired,
-            updateCharges,
-            docRequired,
-            updateType: "ADMIN_MESSAGE",
-            meta,
-          },
-        })
-      );
-
-      setUploadedFiles([]);
-      e.currentTarget.reset();
-      setSuccessMsg("Application updated successfully!");
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || "Something went wrong");
-    }
-  };
 
   // --- Filtering note:
   // Server fetch is authoritative (we pass filters to fetchApplications).
@@ -218,7 +107,7 @@ export default function Applications() {
         setIsDetailsOpen(true);
       }
     } catch {
-      setErrorMsg("Failed to load application details");
+      return;
     }
   };
 
@@ -456,13 +345,9 @@ export default function Applications() {
                 isOpen={isDetailsOpen}
                 onClose={closeDetails}
                 selectedApplication={selectedApplication}
-                onSubmitUpdate={handleUpdate}
-                uploadedFiles={uploadedFiles}
-                onFilesSelected={handleFilesSelected}
-                onDeleteFile={handleDeleteUploaded}
-                uploading={uploading}
-                errorMsg={errorMsg}
-                successMsg={successMsg}
+                onRefresh={async () => {
+                  await dispatch(getApplicationById(selectedApplication.ticketNo)).unwrap();
+                }}
               />
             </motion.div>
           )}
